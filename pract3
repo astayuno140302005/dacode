@@ -1,0 +1,190 @@
+//british corpus
+
+library(topicmodels)
+
+# Set working directory (make sure this path is correct)
+setwd("C:\\Users\\Admin\\Downloads\\british-fiction-corpus\\british-fiction-corpus-master")
+
+# List all text files in the directory
+filenames <- list.files(path = ".", pattern = "\\.txt$", ignore.case = TRUE)
+filenames
+# Read all files and store their content in a list
+filetext <- lapply(filenames, readLines)
+
+# Create a Corpus from the text files
+mycorpus <- Corpus(VectorSource(filetext))
+
+# Preprocess the corpus (remove numbers, punctuation, convert to lowercase, etc.)
+mycorpus <- tm_map(mycorpus, content_transformer(tolower))    # Convert to lowercase
+mycorpus <- tm_map(mycorpus, removeNumbers)                    # Remove numbers
+mycorpus <- tm_map(mycorpus, removePunctuation)                # Remove punctuation
+
+# Define custom stopwords
+mystopwords <- c("of", "a", "and", "the", "in", "to", "for", "that", "is", "on", "are", 
+                 "with", "as", "by", "be", "an", "which", "it", "from", "or", "can", 
+                 "have", "these", "has", "such")
+
+# Remove custom stopwords from the corpus
+mycorpus <- tm_map(mycorpus, removeWords, mystopwords)
+
+# Create a Document-Term Matrix (DTM)
+dtm <- DocumentTermMatrix(mycorpus)
+
+# Check the DTM structure
+inspect(dtm)
+
+# Set number of topics for LDA
+k <- 3
+
+# Apply LDA topic modeling using the VEM (Variational EM) method
+lda_output <- LDA(dtm, k, method = "VEM")
+
+# Check the number of topics (k is already known, but just to confirm)
+print(k)
+
+# Get a summary of the LDA output
+summary(lda_output)
+
+# View the topics in the LDA model
+topics(lda_output)
+
+# View the top 10 terms for each topic
+terms(lda_output, 10)
+
+# Get the document-topic distribution (probabilities of each topic for each document)
+posterior(lda_output)$topics
+
+# View the topic-term matrix
+topic_terms <- terms(lda_output, 10)
+print(topic_terms)
+
+//own folder:
+library(tm)
+library(topicmodels)
+
+# Set working directory (make sure this path is correct)
+setwd("C:\\Users\\Admin\\Downloads\\myfolder")
+
+# List all text files in the directory
+filenames <- list.files(path = ".", pattern = "\\.txt$", ignore.case = TRUE)
+filenames
+# Read all files and store their content in a list
+filetext <- lapply(filenames, readLines)
+
+# Create a Corpus from the text files
+mycorpus <- Corpus(VectorSource(filetext))
+
+# Preprocess the corpus (remove numbers, punctuation, convert to lowercase, etc.)
+mycorpus <- tm_map(mycorpus, content_transformer(tolower))    # Convert to lowercase
+mycorpus <- tm_map(mycorpus, removeNumbers)                    # Remove numbers
+mycorpus <- tm_map(mycorpus, removePunctuation)                # Remove punctuation
+
+# Define custom stopwords
+mystopwords <- c("of", "a", "and", "the", "in", "to", "for", "that", "is", "on", "are", 
+                 "with", "as", "by", "be", "an", "which", "it", "from", "or", "can", 
+                 "have", "these", "has", "such")
+
+# Remove custom stopwords from the corpus
+mycorpus <- tm_map(mycorpus, removeWords, mystopwords)
+
+# Create a Document-Term Matrix (DTM)
+dtm <- DocumentTermMatrix(mycorpus)
+
+# Check the DTM structure
+inspect(dtm)
+
+# Set number of topics for LDA
+k <- 3
+
+# Apply LDA topic modeling using the VEM (Variational EM) method
+lda_output <- LDA(dtm, k, method = "VEM")
+
+# Check the number of topics (k is already known, but just to confirm)
+print(k)
+
+# Get a summary of the LDA output
+summary(lda_output)
+
+# View the topics in the LDA model
+topics(lda_output)
+
+# View the top 10 terms for each topic
+terms(lda_output, 10)
+
+# Get the document-topic distribution (probabilities of each topic for each document)
+posterior(lda_output)$topics
+
+# View the topic-term matrix
+topic_terms <- terms(lda_output, 10)
+print(topic_terms)
+
+
+//sentiment analysis
+weatherdata <- read.csv("C:\\Users\\Admin\\Downloads\\weather.csv")
+
+# Load the required libraries
+install.packages("wordcloud")
+install.packages("RColorBrewer")
+install.packages("syuzhet")
+install.packages("lubridate")
+install.packages("scales")
+install.packages("reshape2")
+install.packages("dplyr")
+library(tm)
+library(wordcloud)
+library(RColorBrewer)  # For color palettes
+library(syuzhet)
+library(lubridate)
+library(ggplot2)
+library(scales)
+library(reshape2)
+library(dplyr)
+
+# Prepare the text data
+corpus <- iconv(weatherdata$tweet_text, to = "utf-8")
+corpus <- Corpus(VectorSource(corpus))
+
+# Text preprocessing
+corpus <- tm_map(corpus, content_transformer(tolower))        # Convert to lowercase
+corpus <- tm_map(corpus, removePunctuation)                    # Remove punctuation
+corpus <- tm_map(corpus, removeNumbers)                        # Remove numbers
+corpus <- tm_map(corpus, removeWords, stopwords('english'))    # Remove stopwords
+corpus <- tm_map(corpus, stripWhitespace)                      # Remove extra whitespace
+
+# Inspect the processed text (first 5 texts)
+inspect(corpus[1:5])
+
+# Create the Term-Document Matrix
+tdm <- TermDocumentMatrix(corpus)
+
+# Convert Term-Document Matrix to a matrix and view a portion
+tdm_matrix <- as.matrix(tdm)
+tdm_matrix[1:10, 1:2]
+
+# Generate word frequency
+w <- rowSums(tdm_matrix)
+w <- sort(w, decreasing = TRUE)
+
+# Create a word cloud
+set.seed(222)
+wordcloud(words = names(w), freq = w, max.words = 150, random.order = FALSE, min.freq = 5, colors = brewer.pal(8, 'Dark2'))
+
+# Wordcloud with rotation
+wordcloud(words = names(w), freq = w, max.words = 150, random.order = FALSE, min.freq = 5, colors = brewer.pal(8, 'Dark2'), rot.per = 0.3)
+
+# Read the tweets again for sentiment analysis
+weatherdata <- read.csv("C:\\Users\\Admin\\Downloads\\weather.csv")
+tweets <- iconv(weatherdata$tweet_text, to = "utf-8")
+
+# Sentiment analysis using NRC lexicon
+s <- get_nrc_sentiment(tweets)
+
+# Inspect the first few sentiment scores
+head(s)
+
+# Inspect a specific tweet
+tweets[4]
+
+# Plot a barplot of the sentiment scores
+barplot(colSums(s), las = 2, col = rainbow(10), ylab = 'count', main = 'Sentiments for weather')
+
