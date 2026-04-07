@@ -58,6 +58,16 @@ posterior(lda_output)$topics
 topic_terms <- terms(lda_output, 10)
 print(topic_terms)
 
+
+
+
+
+
+
+
+
+
+
 //own folder:
 library(tm)
 library(topicmodels)
