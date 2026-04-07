@@ -119,6 +119,16 @@ topic_terms <- terms(lda_output, 10)
 print(topic_terms)
 
 
+
+
+
+
+
+
+
+
+
+
 //sentiment analysis
 weatherdata <- read.csv("C:\\Users\\Admin\\Downloads\\weather.csv")
 
