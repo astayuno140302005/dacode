@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini Game - Transformations</title>
+    <style>
+        canvas {
+            background: #222;
+            display: block;
+            margin: 40px auto;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="500" height="400"></canvas>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Player properties
+let x = 250, y = 200;     // position (translation)
+let angle = 0;            // rotation
+let scale = 1;            // scaling
+let speed = 3;
+
+// Keyboard
+let keys = {};
+
+document.addEventListener("keydown", (e) => keys[e.key] = true);
+document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+function update() {
+    // Translation (Move)
+    if (keys["ArrowUp"])    y -= speed;
+    if (keys["ArrowDown"])  y += speed;
+    if (keys["ArrowLeft"])  x -= speed;
+    if (keys["ArrowRight"]) x += speed;
+
+    // Rotation
+    if (keys["a"]) angle -= 0.05;
+    if (keys["d"]) angle += 0.05;
+
+    // Scaling
+    if (keys["w"]) scale += 0.02;
+    if (keys["s"]) scale -= 0.02;
+}
+
+function drawPlayer() {
+    ctx.save();                 // save current canvas state
+    ctx.translate(x, y);        // move object
+    ctx.rotate(angle);          // rotate object
+    ctx.scale(scale, scale);    // scale object
+
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(-20, -20, 40, 40);  // draw centered square
+
+    ctx.restore();              // restore original state
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    update();
+    drawPlayer();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
